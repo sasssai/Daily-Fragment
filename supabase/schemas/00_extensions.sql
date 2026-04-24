@@ -1,0 +1,13 @@
+-- 拡張機能の有効化を置くファイルです。
+--
+-- extension は、Postgres に標準では入っていない追加機能を使うための仕組みです。
+-- たとえば、cron による定期実行、UUID の補助機能、全文検索の強化などがあります。
+--
+-- このテンプレートでは、テーブルや関数より前に必要になることがあるため、
+-- extension は先頭の `00_extensions.sql` で管理します。
+--
+-- Supabase Studio のボタンから有効化することもできますが、
+-- チーム開発では「誰かが手で押したかどうか」に依存しないよう、
+-- できるだけ SQL を source of truth にして管理するのが安全です。
+--
+create extension if not exists pg_cron with schema pg_catalog;

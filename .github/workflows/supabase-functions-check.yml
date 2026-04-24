@@ -1,0 +1,58 @@
+name: Supabase Edge Functions Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/functions/**"
+      - "supabase/config.toml"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Detect Edge Functions
+        id: detect_functions
+        shell: bash
+        run: |
+          if [ -d supabase/functions ] && find supabase/functions -mindepth 2 -maxdepth 2 -type f -name index.ts | grep -q .; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip when no Edge Functions are defined
+        if: steps.detect_functions.outputs.present != 'true'
+        run: echo "No Edge Functions found under supabase/functions. Skipping check."
+
+      - name: Start local supabase
+        if: steps.detect_functions.outputs.present == 'true'
+        run: supabase start -x studio,imgproxy
+
+      - name: Validate Edge Functions bundle
+        if: steps.detect_functions.outputs.present == 'true'
+        shell: bash
+        run: |
+          set +e
+          timeout 15s supabase functions serve >/tmp/supabase-functions-serve.log 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -eq 124 ]; then
+            echo "Edge Functions served successfully for validation."
+            exit 0
+          fi
+
+          cat /tmp/supabase-functions-serve.log
+          exit "$status"
+
+      - name: Stop local supabase
+        if: always() && steps.detect_functions.outputs.present == 'true'
+        run: supabase stop

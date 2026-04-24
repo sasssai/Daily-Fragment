@@ -1,0 +1,62 @@
+name: Supabase Migration Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/schemas/**"
+      - "supabase/migrations/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project (for remote dry-run)
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Show pending migrations (dry-run against linked project)
+        run: supabase db push --dry-run --linked
+
+      - name: Start local supabase
+        run: supabase start -x studio,imgproxy
+
+      - name: Apply migrations locally
+        run: supabase db reset
+
+      - name: Check schema drift
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          status=0
+          diff_output="$(npm run db:check 2>&1)" || status=$?
+          echo "$diff_output"
+
+          if [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+
+          if echo "$diff_output" | grep -q "No schema changes found"; then
+            exit 0
+          fi
+
+          echo "Schema drift detected. Run 'npm run db:diff migration_name' and commit the generated migration." >&2
+          exit 1
+
+      - name: Lint database
+        run: supabase db lint --level error
+
+      - name: Stop local supabase
+        if: always()
+        run: supabase stop

@@ -1,0 +1,53 @@
+name: Supabase Storage Deploy (prod)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/config.toml"
+
+concurrency:
+  group: supabase-storage-deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Detect Storage config
+        id: detect_storage
+        shell: bash
+        run: |
+          if ! grep -Eq '^[[:space:]]*enabled[[:space:]]*=[[:space:]]*true[[:space:]]*$' supabase/config.toml; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if ! grep -Eq '^\[storage\.buckets\.[^]]+\]$' supabase/config.toml; then
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "present=true" >> "$GITHUB_OUTPUT"
+
+      - name: Skip when Storage is not configured
+        if: steps.detect_storage.outputs.present != 'true'
+        run: echo "Supabase Storage is disabled or has no bucket definitions. Skipping deploy."
+
+      - name: Link project (for --linked)
+        if: steps.detect_storage.outputs.present == 'true'
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Seed storage buckets to prod
+        if: steps.detect_storage.outputs.present == 'true'
+        run: supabase seed buckets --linked
