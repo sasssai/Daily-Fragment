@@ -81,7 +81,7 @@ export function OnboardingForm({
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">ようこそ</CardTitle>
+          <CardTitle className="text-2xl">Hello</CardTitle>
           <p className="mt-2 text-sm text-muted-foreground">
             あなたのハンドルを決めてください。これが公開ページのURLになります。
           </p>
@@ -90,13 +90,13 @@ export function OnboardingForm({
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="handle">ハンドル（必須）</Label>
+                <Label htmlFor="handle">User ID</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">/</span>
                   <Input
                     id="handle"
                     type="text"
-                    placeholder="sakuraarai"
+                    placeholder="User_id"
                     required
                     value={handle}
                     onChange={(e) => setHandle(e.target.value)}
@@ -108,22 +108,22 @@ export function OnboardingForm({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="display-name">表示名（任意）</Label>
+                <Label htmlFor="display-name">User name</Label>
                 <Input
                   id="display-name"
                   type="text"
-                  placeholder="荒井 咲良"
+                  placeholder="Username"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="bio">ひとこと（任意）</Label>
+                <Label htmlFor="bio">Message</Label>
                 <Input
                   id="bio"
                   type="text"
-                  placeholder="記録より記憶に残る一瞬を。"
+                  placeholder="Message"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                 />
