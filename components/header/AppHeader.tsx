@@ -22,7 +22,7 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-20 flex w-full items-center justify-between bg-gray-50 px-4 py-3 shadow-sm md:px-16">
       <Link
-        href="/protected/home"
+        href={isHome ? "/protected/home" : "/"}
         className="flex flex-col leading-tight min-w-0"
       >
         {isHome ? (

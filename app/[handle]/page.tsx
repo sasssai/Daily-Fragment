@@ -21,6 +21,9 @@ export default async function PublicHandlePage({
     notFound();
   }
 
+  const { data: authData } = await supabase.auth.getClaims();
+  const isLoggedIn = !!authData?.claims;
+
   const { data: pinsRaw } = await supabase
     .from("posts")
     .select("id, image_path, caption, posted_at, pinned_at")
@@ -52,6 +55,7 @@ export default async function PublicHandlePage({
         bio: profile.bio,
       }}
       pins={pins}
+      isLoggedIn={isLoggedIn}
     />
   );
 }

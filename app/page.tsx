@@ -48,7 +48,7 @@ export default async function Home() {
           <p className="text-lg sm:text-xl leading-relaxed">
             記録より記憶に残る一瞬を。
           </p>
-          <p className="text-sm sm:text-base text-white/70 leading-loose">
+          <p className="text-sm sm:text-base text-white/70 leading-relaxed">
             忘れたことに気づかないくらい小さな幸せを。
             <br />
             記憶に留めたいと心が叫んだ瞬間を。
@@ -64,7 +64,7 @@ export default async function Home() {
               size="lg"
               className="bg-white text-black hover:bg-white/90"
             >
-              <Link href="/protected/home">Gathering your fragment</Link>
+              <Link href="/protected/home">Gather your fragments</Link>
             </Button>
           ) : (
             <>
