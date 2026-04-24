@@ -20,11 +20,11 @@ export function FloatingPins({ pins }: FloatingPinsProps) {
     <div className="fixed inset-0 pointer-events-none z-[1] overflow-hidden">
       {pins.map((pin, i) => {
         // 個体ごとに流れの速さ・出発点・遅延を少しずつバラす
-        const duration = 42 + (i * 7) % 28; // 42〜70秒
-        const delay = (i * 5.5) % 40;        // 0〜40秒ずれ
-        const startTop = (i * 17) % 60;       // 上辺から何%下にスタート
-        const startLeft = 95 + (i % 3) * 8;   // 画面外右寄り
-        const size = 56 + (i % 4) * 8;        // 56〜80px
+        const duration = 38 + ((i * 7) % 24); // 38〜62秒
+        const delay = (i * 3) % 10; // 0〜10秒ずれ
+        const startTop = (i * 13) % 45; // 上辺から何%下にスタート
+        const startLeft = 80 + (i % 3) * 6; // 画面端近く (80〜92%)
+        const size = 64 + (i % 4) * 10; // 64〜94px
 
         return (
           <Link
@@ -32,7 +32,7 @@ export function FloatingPins({ pins }: FloatingPinsProps) {
             href={`/${pin.handle}`}
             className="absolute pointer-events-auto group block"
             style={{
-              top: `${startTop - 10}%`,
+              top: `${startTop}%`,
               left: `${startLeft}%`,
               animation: `floatSakura ${duration}s linear infinite`,
               animationDelay: `${delay}s`,

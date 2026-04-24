@@ -137,14 +137,14 @@
     transform: translate(0, 0) rotate(0deg);
     opacity: 0;
   }
-  8% {
-    opacity: 0.85;
+  4% {
+    opacity: 0.9;
   }
-  92% {
-    opacity: 0.85;
+  96% {
+    opacity: 0.9;
   }
   100% {
-    transform: translate(-130vw, 105vh) rotate(18deg);
+    transform: translate(-110vw, 95vh) rotate(18deg);
     opacity: 0;
   }
 }
