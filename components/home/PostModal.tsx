@@ -52,7 +52,7 @@ export function PostModal({
   const handleSave = async () => {
     if (!selectedDate) return;
     if (!file) {
-      toast.error("写真を選んでください");
+      toast.error("Please select a photo");
       return;
     }
 
@@ -79,13 +79,13 @@ export function PostModal({
 
       if (insertError) throw insertError;
 
-      toast.success("done");
+      toast.success("Saved");
       setFile(null);
       setCaption("");
       router.refresh();
       onClose();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "保存に失敗しました";
+      const message = error instanceof Error ? error.message : "Save failed";
       toast.error(message);
     } finally {
       setIsSaving(false);
@@ -93,7 +93,7 @@ export function PostModal({
   };
 
   const handleDelete = async (postId: string, imagePath: string) => {
-    if (!confirm("この投稿を削除しますか？")) return;
+    if (!confirm("Delete this post?")) return;
 
     const supabase = createClient();
     const { error: storageError } = await supabase.storage
@@ -101,7 +101,7 @@ export function PostModal({
       .remove([imagePath]);
 
     if (storageError) {
-      toast.error("画像の削除に失敗しました: " + storageError.message);
+      toast.error("Failed to delete image: " + storageError.message);
       return;
     }
 
@@ -111,11 +111,11 @@ export function PostModal({
       .eq("id", postId);
 
     if (deleteError) {
-      toast.error("投稿の削除に失敗しました: " + deleteError.message);
+      toast.error("Failed to delete post: " + deleteError.message);
       return;
     }
 
-    toast.success("削除しました");
+    toast.success("Deleted");
     router.refresh();
   };
 
@@ -130,7 +130,7 @@ export function PostModal({
 
         {existingPosts.length > 0 && (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-muted-foreground">この日の投稿</p>
+            <p className="text-sm text-muted-foreground">Posts</p>
             <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
               {existingPosts.map((post) => (
                 <div
@@ -155,7 +155,7 @@ export function PostModal({
                     onClick={() => handleDelete(post.id, post.image_path)}
                     className="absolute top-1 right-1 bg-white/80 hover:bg-white text-red-600 rounded px-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    削除
+                    Delete
                   </button>
                 </div>
               ))}
@@ -165,10 +165,10 @@ export function PostModal({
         )}
 
         <div className="flex flex-col gap-4">
-          <p className="text-sm text-muted-foreground">新しい瞬間を残す</p>
+          <p className="text-sm text-muted-foreground">Capture a moment</p>
 
           <div className="grid gap-2">
-            <Label htmlFor="photo">写真</Label>
+            <Label htmlFor="photo">Photo</Label>
             <Input
               id="photo"
               type="file"
@@ -186,11 +186,11 @@ export function PostModal({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="caption">ひとこと（任意）</Label>
+            <Label htmlFor="caption">Message</Label>
             <Input
               id="caption"
               type="text"
-              placeholder="この瞬間のこと"
+              placeholder="About this moment"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
             />
@@ -204,10 +204,10 @@ export function PostModal({
             onClick={onClose}
             disabled={isSaving}
           >
-            キャンセル
+            Cancel
           </Button>
           <Button type="button" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "保存中…" : "残す"}
+            {isSaving ? "Saving…" : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

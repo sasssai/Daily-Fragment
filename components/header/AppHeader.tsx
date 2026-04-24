@@ -5,11 +5,10 @@ import { Home, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { MobileNavigation } from "../MobileNavigation";
-import Image from "next/image";
 
 const navItems = [
-  { href: "/protected/home", icon: Home, label: "ホーム" },
-  { href: "/protected/settings", icon: Settings, label: "設定" },
+  { href: "/protected/home", icon: Home, label: "Home" },
+  { href: "/protected/settings", icon: Settings, label: "Settings" },
 ];
 
 const Header = () => {
@@ -17,14 +16,8 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-20 flex w-full items-center justify-between bg-gray-50 p-4 shadow-sm md:px-16">
-      <Link href="/protected/home">
-        <Image
-          src="/images/logo.png"
-          alt="アプリロゴ"
-          height={80}
-          width={80}
-          className="mb-2"
-        />
+      <Link href="/protected/home" className="text-2xl tracking-wide">
+        hanami
       </Link>
 
       <div className="flex items-center gap-4">

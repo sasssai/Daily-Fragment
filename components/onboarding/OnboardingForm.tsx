@@ -28,12 +28,12 @@ export function OnboardingForm({
     setIsLoading(true);
 
     if (!HANDLE_REGEX.test(handle)) {
-      toast.error("ハンドルは半角英数字と _ のみ、3〜20文字で入力してください");
+      toast.error("Username must be 3–20 letters, numbers, or _");
       setIsLoading(false);
       return;
     }
     if (RESERVED_HANDLES.includes(handle.toLowerCase())) {
-      toast.error("そのハンドルは使えません");
+      toast.error("Reserved username");
       setIsLoading(false);
       return;
     }
@@ -46,7 +46,7 @@ export function OnboardingForm({
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      toast.error("ログイン状態を確認できませんでした");
+      toast.error("Could not verify login");
       setIsLoading(false);
       return;
     }
@@ -62,15 +62,15 @@ export function OnboardingForm({
 
     if (error) {
       if (error.code === "23505") {
-        toast.error("そのハンドルはすでに使われています");
+        toast.error("Username is already taken");
       } else {
-        toast.error("保存に失敗しました: " + error.message);
+        toast.error("Save failed: " + error.message);
       }
       setIsLoading(false);
       return;
     }
 
-    toast.success("ようこそ");
+    toast.success("Welcome");
     router.push("/protected/home");
   };
 
@@ -83,36 +83,36 @@ export function OnboardingForm({
         <CardHeader>
           <CardTitle className="text-2xl">Hello</CardTitle>
           <p className="mt-2 text-sm text-muted-foreground">
-            あなたのハンドルを決めてください。これが公開ページのURLになります。
+            Set up your profile.
           </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="handle">User ID</Label>
+                <Label htmlFor="handle">Username</Label>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">/</span>
                   <Input
                     id="handle"
                     type="text"
-                    placeholder="User_id"
+                    placeholder="Username"
                     required
                     value={handle}
                     onChange={(e) => setHandle(e.target.value)}
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  半角英数字と _ のみ、3〜20文字
+                  3–20 letters, numbers, or _
                 </p>
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="display-name">User name</Label>
+                <Label htmlFor="display-name">Displayname</Label>
                 <Input
                   id="display-name"
                   type="text"
-                  placeholder="Username"
+                  placeholder="Displayname"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                 />
@@ -134,7 +134,7 @@ export function OnboardingForm({
                 className="w-full cursor-pointer"
                 disabled={isLoading}
               >
-                {isLoading ? "保存中…" : "はじめる"}
+                {isLoading ? "Saving…" : "Start"}
               </Button>
             </div>
           </form>

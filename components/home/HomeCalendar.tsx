@@ -10,13 +10,44 @@ type HomeCalendarProps = {
   userId: string;
 };
 
-const WEEK_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+const WEEK_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTH_LABELS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 function toDateKey(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+function parseDateKey(key: string): Date {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function formatMonthDay(key: string): string {
+  const d = parseDateKey(key);
+  return `${String(d.getMonth() + 1).padStart(2, "0")}/${String(
+    d.getDate()
+  ).padStart(2, "0")}`;
+}
+
+function formatWeekdayShort(key: string): string {
+  const d = parseDateKey(key);
+  return WEEK_LABELS[d.getDay()];
 }
 
 function generateCalendarDays(anchor: Date): Date[] {
@@ -58,6 +89,17 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
     [currentMonth]
   );
 
+  const postsInCurrentMonth = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    return posts
+      .filter((p) => {
+        const d = parseDateKey(p.posted_at);
+        return d.getFullYear() === year && d.getMonth() === month;
+      })
+      .sort((a, b) => b.posted_at.localeCompare(a.posted_at));
+  }, [posts, currentMonth]);
+
   const selectedDatePosts = selectedDate
     ? postsByDate.get(selectedDate) ?? []
     : [];
@@ -84,14 +126,14 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
           <Button variant="outline" size="sm" onClick={goPrevMonth}>
             ←
           </Button>
-          <h2 className="text-xl font-semibold sm:text-2xl min-w-32 text-center">
-            {currentMonth.getFullYear()}年 {currentMonth.getMonth() + 1}月
+          <h2 className="text-xl font-semibold sm:text-2xl min-w-44 text-center">
+            {MONTH_LABELS[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </h2>
           <Button variant="outline" size="sm" onClick={goNextMonth}>
             →
           </Button>
           <Button variant="ghost" size="sm" onClick={goThisMonth}>
-            今月
+            Today
           </Button>
         </div>
 
@@ -106,7 +148,7 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
                 : "text-muted-foreground hover:bg-muted"
             )}
           >
-            写真
+            Photo
           </button>
           <button
             type="button"
@@ -118,76 +160,107 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
                 : "text-muted-foreground hover:bg-muted"
             )}
           >
-            一言
+            Text
           </button>
         </div>
       </header>
 
-      <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
-        {WEEK_LABELS.map((w) => (
-          <div
-            key={w}
-            className="bg-muted text-center text-xs font-medium text-muted-foreground py-2"
-          >
-            {w}
-          </div>
-        ))}
-        {days.map((d) => {
-          const key = toDateKey(d);
-          const inMonth = d.getMonth() === currentMonth.getMonth();
-          const isToday = key === todayKey;
-          const dayPosts = postsByDate.get(key) ?? [];
-          const firstPost = dayPosts[0];
-
-          return (
-            <button
-              type="button"
-              key={key}
-              onClick={() => setSelectedDate(key)}
-              className={cn(
-                "bg-background aspect-square p-1 text-left flex flex-col gap-0.5 hover:bg-muted/50 transition-colors",
-                !inMonth && "opacity-40",
-                isToday && "ring-2 ring-primary ring-inset"
-              )}
+      {activeTab === "photo" && (
+        <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
+          {WEEK_LABELS.map((w) => (
+            <div
+              key={w}
+              className="bg-muted text-center text-xs font-medium text-muted-foreground py-2"
             >
-              <span
+              {w}
+            </div>
+          ))}
+          {days.map((d) => {
+            const key = toDateKey(d);
+            const inMonth = d.getMonth() === currentMonth.getMonth();
+            const isToday = key === todayKey;
+            const dayPosts = postsByDate.get(key) ?? [];
+            const firstPost = dayPosts[0];
+
+            return (
+              <button
+                type="button"
+                key={key}
+                onClick={() => setSelectedDate(key)}
                 className={cn(
-                  "text-xs",
-                  isToday && "font-bold text-primary"
+                  "bg-background aspect-square p-1 text-left flex flex-col gap-0.5 hover:bg-muted/50 transition-colors",
+                  !inMonth && "opacity-40",
+                  isToday && "ring-2 ring-primary ring-inset"
                 )}
               >
-                {d.getDate()}
-              </span>
+                <span
+                  className={cn(
+                    "text-xs",
+                    isToday && "font-bold text-primary"
+                  )}
+                >
+                  {d.getDate()}
+                </span>
 
-              {firstPost && activeTab === "photo" && firstPost.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={firstPost.imageUrl}
-                  alt={firstPost.caption ?? ""}
-                  className="w-full flex-1 object-cover rounded-sm"
-                />
-              )}
+                {firstPost && firstPost.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={firstPost.imageUrl}
+                    alt={firstPost.caption ?? ""}
+                    className="w-full flex-1 object-cover rounded-sm"
+                  />
+                )}
 
-              {firstPost && activeTab === "text" && (
-                <div className="flex-1 flex items-start">
-                  <p className="text-xs line-clamp-3 leading-tight">
-                    {firstPost.caption ?? "(写真のみ)"}
+                {dayPosts.length > 1 && (
+                  <span className="text-[10px] text-muted-foreground self-end">
+                    +{dayPosts.length - 1}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {activeTab === "text" && (
+        <div className="flex flex-col divide-y rounded-lg border">
+          {postsInCurrentMonth.length === 0 ? (
+            <div className="p-10 text-center text-sm text-muted-foreground">
+              No messages yet this month.
+            </div>
+          ) : (
+            postsInCurrentMonth.map((post) => (
+              <button
+                type="button"
+                key={post.id}
+                onClick={() => setSelectedDate(post.posted_at)}
+                className="flex items-start gap-4 p-4 hover:bg-muted/50 text-left transition-colors"
+              >
+                <div className="flex flex-col items-center w-16 shrink-0">
+                  <span className="text-lg font-medium leading-none">
+                    {formatMonthDay(post.posted_at)}
+                  </span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {formatWeekdayShort(post.posted_at)}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0 pt-0.5">
+                  <p className="text-sm leading-relaxed">
+                    {post.caption ?? (
+                      <span className="text-muted-foreground">
+                        (photo only)
+                      </span>
+                    )}
                   </p>
                 </div>
-              )}
-
-              {dayPosts.length > 1 && (
-                <span className="text-[10px] text-muted-foreground self-end">
-                  +{dayPosts.length - 1}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+              </button>
+            ))
+          )}
+        </div>
+      )}
 
       <p className="text-xs text-muted-foreground text-center">
-        日付をクリックして、その日の瞬間を残す
+        Click a date to capture a moment.
       </p>
 
       <PostModal
