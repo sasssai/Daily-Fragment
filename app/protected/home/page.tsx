@@ -14,7 +14,7 @@ export default async function ProtectedPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("handle, display_name")
+    .select("handle")
     .eq("user_id", user.sub)
     .single();
 
@@ -44,17 +44,5 @@ export default async function ProtectedPage() {
     })
   );
 
-  return (
-    <div className="w-full py-4 sm:py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold sm:text-3xl">
-          {profile.display_name ?? profile.handle}&apos;s Calendar
-        </h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Capture moments. Pin the ones to share.
-        </p>
-      </div>
-      <HomeCalendar posts={posts} userId={user.sub} />
-    </div>
-  );
+  return <HomeCalendar posts={posts} userId={user.sub} />;
 }

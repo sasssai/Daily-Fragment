@@ -89,16 +89,21 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
     [currentMonth]
   );
 
-  const postsInCurrentMonth = useMemo(() => {
+  const allDaysInCurrentMonth = useMemo(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
-    return posts
-      .filter((p) => {
-        const d = parseDateKey(p.posted_at);
-        return d.getFullYear() === year && d.getMonth() === month;
-      })
-      .sort((a, b) => b.posted_at.localeCompare(a.posted_at));
-  }, [posts, currentMonth]);
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const result: { dateKey: string; posts: ExistingPost[] }[] = [];
+    for (let d = 1; d <= lastDay; d++) {
+      const date = new Date(year, month, d);
+      const key = toDateKey(date);
+      result.push({
+        dateKey: key,
+        posts: postsByDate.get(key) ?? [],
+      });
+    }
+    return result;
+  }, [currentMonth, postsByDate]);
 
   const selectedDatePosts = selectedDate
     ? postsByDate.get(selectedDate) ?? []
@@ -120,7 +125,7 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
   const todayKey = toDateKey(new Date());
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={goPrevMonth}>
@@ -224,44 +229,56 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
 
       {activeTab === "text" && (
         <div className="flex flex-col divide-y rounded-lg border">
-          {postsInCurrentMonth.length === 0 ? (
-            <div className="p-10 text-center text-sm text-muted-foreground">
-              No messages yet this month.
-            </div>
-          ) : (
-            postsInCurrentMonth.map((post) => (
+          {allDaysInCurrentMonth.map((row) => {
+            const isToday = row.dateKey === todayKey;
+            return (
               <button
                 type="button"
-                key={post.id}
-                onClick={() => setSelectedDate(post.posted_at)}
-                className="flex items-start gap-4 p-4 hover:bg-muted/50 text-left transition-colors"
+                key={row.dateKey}
+                onClick={() => setSelectedDate(row.dateKey)}
+                className={cn(
+                  "flex items-start gap-4 px-4 py-2.5 hover:bg-muted/50 text-left transition-colors",
+                  isToday && "bg-primary/5"
+                )}
               >
-                <div className="flex flex-col items-center w-16 shrink-0">
-                  <span className="text-lg font-medium leading-none">
-                    {formatMonthDay(post.posted_at)}
+                <div className="flex flex-col items-center w-14 shrink-0">
+                  <span
+                    className={cn(
+                      "text-base font-medium leading-none",
+                      isToday && "text-primary font-bold"
+                    )}
+                  >
+                    {formatMonthDay(row.dateKey)}
                   </span>
                   <span className="text-xs text-muted-foreground mt-1">
-                    {formatWeekdayShort(post.posted_at)}
+                    {formatWeekdayShort(row.dateKey)}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5">
-                  <p className="text-sm leading-relaxed">
-                    {post.caption ?? (
-                      <span className="text-muted-foreground">
-                        (photo only)
-                      </span>
-                    )}
-                  </p>
+                  {row.posts.length === 0 ? (
+                    <span className="text-sm text-muted-foreground/30">—</span>
+                  ) : (
+                    <div className="flex flex-col gap-1">
+                      {row.posts.map((p) => (
+                        <p
+                          key={p.id}
+                          className="text-sm leading-relaxed line-clamp-2"
+                        >
+                          {p.caption ?? (
+                            <span className="text-muted-foreground">
+                              (photo only)
+                            </span>
+                          )}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </button>
-            ))
-          )}
+            );
+          })}
         </div>
       )}
-
-      <p className="text-xs text-muted-foreground text-center">
-        Click a date to capture a moment.
-      </p>
 
       <PostModal
         isOpen={selectedDate !== null}

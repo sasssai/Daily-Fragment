@@ -7,6 +7,8 @@ import { createContext, useContext, ReactNode } from "react";
 export type UserProfile = {
   userId: string;
   userName: string;
+  handle: string | null;
+  displayName: string | null;
 };
 
 /**
@@ -28,7 +30,7 @@ export const UserProvider = ({ user, children }: UserProviderProps) => (
 );
 
 /**
- * Return userId,
+ * Return user profile (userId, userName, handle, displayName)
  */
 export function useUser() {
   const ctx = useContext(UserContext);
