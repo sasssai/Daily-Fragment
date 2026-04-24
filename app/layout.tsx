@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Shippori_Mincho } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -9,14 +9,14 @@ const defaultUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  applicationName: "Scarlet Next.js and Supabase Starter Kit",
-  title: "Scarlet Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  applicationName: "hanami",
+  title: "hanami — 今日の小さな光",
+  description: "記録より記憶に残る一瞬を。",
   openGraph: {
-    title: "Scarlet Next.js and Supabase Starter Kit",
-    description: "The fastest way to build apps with Next.js and Supabase",
+    title: "hanami — 今日の小さな光",
+    description: "記録より記憶に残る一瞬を。",
     url: defaultUrl,
-    siteName: "Scarlet Next.js and Supabase Starter Kit",
+    siteName: "hanami",
     locale: "ja_JP",
     type: "website",
     images: [
@@ -30,16 +30,16 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Scarlet Next.js and Supabase Starter Kit",
-    description: "The fastest way to build apps with Next.js and Supabase",
+    title: "hanami — 今日の小さな光",
+    description: "記録より記憶に残る一瞬を。",
     images: ["/icons/og-icon.png"],
   },
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const shipporiMincho = Shippori_Mincho({
+  weight: ["400", "500", "600", "700"],
   display: "swap",
-  subsets: ["latin"],
+  preload: false,
 });
 
 export default function RootLayout({
@@ -50,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body
-        className={`${geistSans.className} flex min-h-screen w-full flex-col items-center antialiased`}
+        className={`${shipporiMincho.className} flex min-h-screen w-full flex-col items-center antialiased`}
       >
         {children}
         <Toaster />

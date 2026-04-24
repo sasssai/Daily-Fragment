@@ -48,10 +48,10 @@ export default async function ProtectedPage() {
     <div className="w-full py-4 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold sm:text-3xl">
-          {profile.display_name ?? profile.handle} のカレンダー
+          {profile.display_name ?? profile.handle}&apos;s Calendar
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          日々の瞬間を積み重ねて、ピンしたものが公開される。
+          Capture moments. Pin the ones to share.
         </p>
       </div>
       <HomeCalendar posts={posts} userId={user.sub} />

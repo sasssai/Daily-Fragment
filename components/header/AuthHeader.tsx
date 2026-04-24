@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const AuthHeader = () => {
@@ -11,24 +10,18 @@ const AuthHeader = () => {
   const links = [
     {
       href: "/auth/login",
-      label: "ログイン",
+      label: "Login",
     },
     {
       href: "/auth/sign-up",
-      label: "登録",
+      label: "Sign up",
     },
   ];
 
   return (
     <header className="flex w-full items-center justify-between gap-4 bg-gray-50 p-4 shadow-sm md:px-16">
-      <Link href={"/"} className="text-xl md:text-2xl">
-        <Image
-          src="/images/logo.png"
-          alt="アプリロゴ"
-          height={80}
-          width={80}
-          className="mb-2"
-        />
+      <Link href={"/"} className="text-2xl tracking-wide md:text-3xl">
+        hanami
       </Link>
       <div className="space-x-8">
         <div className="hidden space-x-4 sm:inline">
