@@ -98,20 +98,17 @@ export function SakuraCanvas() {
           this.x = Math.random() * W;
           this.y = Math.random() * H;
         } else {
-          // 上流側（右上）から集中的に供給:
-          //  - 上辺の右 60% から
-          //  - 右辺の上 55% から
-          if (Math.random() < 0.5) {
-            this.x = W * 0.4 + Math.random() * W * 0.7;
+          if (Math.random() < 0.55) {
+            this.x = Math.random() * W;
             this.y = -15;
           } else {
             this.x = W + 15;
-            this.y = Math.random() * H * 0.55;
+            this.y = Math.random() * H * 0.85;
           }
         }
         this.vx = 0;
         this.vy = 0;
-        this.baseSize = 4.5 + Math.random() * 3.5;
+        this.baseSize = 3.2 + Math.random() * 4.8;
         this.size = this.baseSize;
         this.baseHue = 335 + Math.random() * 30;
         this.hue = this.baseHue;
