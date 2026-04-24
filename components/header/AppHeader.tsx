@@ -27,7 +27,7 @@ const Header = () => {
       >
         {isHome ? (
           <span className="text-lg font-semibold truncate sm:text-xl">
-            {displayName}&apos;s Fragments
+            {displayName}&apos;s Fragment
           </span>
         ) : (
           <>

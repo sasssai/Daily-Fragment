@@ -9,7 +9,7 @@ export default async function Home() {
   const isLoggedIn = !!data?.claims;
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#305269] via-[#203a52] to-[#12243a] text-white overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#305269] via-[#203a52] to-[#12243a] text-white overflow-x-hidden isolate">
       <SakuraCanvas />
 
       <nav className="relative flex w-full items-center justify-between px-6 py-5 md:px-12">
@@ -44,14 +44,16 @@ export default async function Home() {
           </p>
         </header>
 
-        <div className="max-w-xl flex flex-col gap-4">
+        <div className="max-w-xl flex flex-col gap-6">
           <p className="text-lg sm:text-xl leading-relaxed">
             記録より記憶に残る一瞬を。
           </p>
           <p className="text-sm sm:text-base text-white/70 leading-loose">
-            毎日のひとこまを写真と一言で残し、
+            忘れたことに気づかないくらい小さな幸せを。
             <br />
-            記憶に留めたい瞬間だけを世界に公開する。
+            記憶に留めたいと心が叫んだ瞬間を。
+            <br />
+            忘れる前に、忘れられる前に、記録ではなく記憶に残すために。
           </p>
         </div>
 
@@ -62,7 +64,7 @@ export default async function Home() {
               size="lg"
               className="bg-white text-black hover:bg-white/90"
             >
-              <Link href="/protected/home">Open your calendar</Link>
+              <Link href="/protected/home">Gathering your fragment</Link>
             </Button>
           ) : (
             <>
@@ -90,7 +92,7 @@ export default async function Home() {
             <span className="text-2xl text-white/40">01</span>
             <p className="font-medium">Capture</p>
             <p className="text-white/60 text-xs leading-relaxed">
-              写真と一言で、
+              写真と一言で
               <br />
               日々の断片を残す
             </p>
@@ -99,18 +101,18 @@ export default async function Home() {
             <span className="text-2xl text-white/40">02</span>
             <p className="font-medium">Pin</p>
             <p className="text-white/60 text-xs leading-relaxed">
-              最大6つ、
+              記憶に留めたい
               <br />
-              記憶に残したい瞬間を選ぶ
+              瞬間を選ぶ
             </p>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <span className="text-2xl text-white/40">03</span>
             <p className="font-medium">Share</p>
             <p className="text-white/60 text-xs leading-relaxed">
-              ピンした瞬間だけが、
+              ピンした瞬間を
               <br />
-              あなたのページに咲く
+              世界に公開する
             </p>
           </div>
         </section>

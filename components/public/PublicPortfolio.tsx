@@ -33,7 +33,7 @@ export function PublicPortfolio({ profile, pins }: PublicPortfolioProps) {
 
       {pins.length === 0 ? (
         <div className="py-16 text-center text-muted-foreground text-sm">
-          No pinned fragments yet.
+          No pinned fragment yet.
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
