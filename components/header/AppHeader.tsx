@@ -5,6 +5,7 @@ import { Home, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { MobileNavigation } from "../MobileNavigation";
+import { useUser } from "@/context/UserContext";
 
 const navItems = [
   { href: "/protected/home", icon: Home, label: "Home" },
@@ -13,11 +14,29 @@ const navItems = [
 
 const Header = () => {
   const pathname = usePathname();
+  const user = useUser();
+  const displayName = user.displayName ?? user.handle ?? "your";
+
+  const isHome = pathname === "/protected/home";
 
   return (
-    <header className="sticky top-0 z-20 flex w-full items-center justify-between bg-gray-50 p-4 shadow-sm md:px-16">
-      <Link href="/protected/home" className="text-2xl tracking-wide">
-        hanami
+    <header className="sticky top-0 z-20 flex w-full items-center justify-between bg-gray-50 px-4 py-3 shadow-sm md:px-16">
+      <Link
+        href="/protected/home"
+        className="flex flex-col leading-tight min-w-0"
+      >
+        {isHome ? (
+          <>
+            <span className="text-lg font-semibold truncate sm:text-xl">
+              {displayName}&apos;s Calendar
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Capture moments
+            </span>
+          </>
+        ) : (
+          <span className="text-2xl tracking-wide">hanami</span>
+        )}
       </Link>
 
       <div className="flex items-center gap-4">
