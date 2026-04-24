@@ -41,21 +41,17 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
   const url = request.nextUrl.clone();
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  if (request.nextUrl.pathname.startsWith("/protected") && !user) {
+    // protected配下は認証必須。未ログインなら /auth/login に誘導
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
-  // if the user is logged in and tries to access the login page, redirect them to the home page
-  else if (user && (url.pathname === "/" || url.pathname.startsWith("/auth"))) {
+  // ログイン済みが /auth/* にアクセスしたら /protected/home に戻す
+  else if (user && url.pathname.startsWith("/auth")) {
     url.pathname = "/protected/home";
     return NextResponse.redirect(url);
   }
+  // それ以外 ( /, /{handle}, /onboarding 等 ) はログイン状態問わず通す
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
