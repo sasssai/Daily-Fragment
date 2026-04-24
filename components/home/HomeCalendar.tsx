@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { PostModal, type ExistingPost } from "./PostModal";
+import { PhotoViewer } from "./PhotoViewer";
 
 type HomeCalendarProps = {
   posts: ExistingPost[];
@@ -50,6 +51,13 @@ function formatWeekdayShort(key: string): string {
   return WEEK_LABELS[d.getDay()];
 }
 
+function formatViewerDateLabel(key: string): string {
+  const d = parseDateKey(key);
+  return `${MONTH_LABELS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()} (${
+    WEEK_LABELS[d.getDay()]
+  })`;
+}
+
 function generateCalendarDays(anchor: Date): Date[] {
   const year = anchor.getFullYear();
   const month = anchor.getMonth();
@@ -72,7 +80,8 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
   const [activeTab, setActiveTab] = useState<"photo" | "text">("photo");
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [viewerDate, setViewerDate] = useState<string | null>(null);
+  const [modalDate, setModalDate] = useState<string | null>(null);
 
   const postsByDate = useMemo(() => {
     const map = new Map<string, ExistingPost[]>();
@@ -105,9 +114,26 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
     return result;
   }, [currentMonth, postsByDate]);
 
-  const selectedDatePosts = selectedDate
-    ? postsByDate.get(selectedDate) ?? []
+  const handleCellClick = (key: string) => {
+    const dayPosts = postsByDate.get(key) ?? [];
+    if (dayPosts.length > 0) {
+      setViewerDate(key);
+    } else {
+      setModalDate(key);
+    }
+  };
+
+  const handleEditFromViewer = () => {
+    if (viewerDate) {
+      setModalDate(viewerDate);
+      setViewerDate(null);
+    }
+  };
+
+  const viewerPosts = viewerDate
+    ? postsByDate.get(viewerDate) ?? []
     : [];
+  const modalPosts = modalDate ? postsByDate.get(modalDate) ?? [] : [];
 
   const goPrevMonth = () =>
     setCurrentMonth(
@@ -171,7 +197,7 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
       </header>
 
       {activeTab === "photo" && (
-        <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
+        <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden border">
           {WEEK_LABELS.map((w) => (
             <div
               key={w}
@@ -186,38 +212,45 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
             const isToday = key === todayKey;
             const dayPosts = postsByDate.get(key) ?? [];
             const firstPost = dayPosts[0];
+            const hasPhoto = !!firstPost?.imageUrl;
 
             return (
               <button
                 type="button"
                 key={key}
-                onClick={() => setSelectedDate(key)}
+                onClick={() => handleCellClick(key)}
                 className={cn(
-                  "bg-background aspect-square p-1 text-left flex flex-col gap-0.5 hover:bg-muted/50 transition-colors",
+                  "relative bg-background aspect-square overflow-hidden hover:brightness-95 transition",
                   !inMonth && "opacity-40",
-                  isToday && "ring-2 ring-primary ring-inset"
+                  isToday && "ring-2 ring-primary ring-inset z-10"
                 )}
               >
+                {hasPhoto && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={firstPost.imageUrl!}
+                    alt={firstPost.caption ?? ""}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+
                 <span
                   className={cn(
-                    "text-xs",
-                    isToday && "font-bold text-primary"
+                    "absolute top-1 left-1 text-xs font-medium z-10 px-1.5 py-0.5 rounded",
+                    hasPhoto
+                      ? "text-white bg-black/35"
+                      : "text-foreground",
+                    isToday &&
+                      (hasPhoto
+                        ? "bg-primary text-primary-foreground font-bold"
+                        : "text-primary font-bold")
                   )}
                 >
                   {d.getDate()}
                 </span>
 
-                {firstPost && firstPost.imageUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={firstPost.imageUrl}
-                    alt={firstPost.caption ?? ""}
-                    className="w-full flex-1 object-cover rounded-sm"
-                  />
-                )}
-
                 {dayPosts.length > 1 && (
-                  <span className="text-[10px] text-muted-foreground self-end">
+                  <span className="absolute bottom-1 right-1 text-[10px] text-white bg-black/55 rounded px-1.5 py-0.5 z-10">
                     +{dayPosts.length - 1}
                   </span>
                 )}
@@ -228,16 +261,16 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
       )}
 
       {activeTab === "text" && (
-        <div className="flex flex-col divide-y rounded-lg border">
+        <div className="rounded-lg border overflow-hidden flex flex-col divide-y">
           {allDaysInCurrentMonth.map((row) => {
             const isToday = row.dateKey === todayKey;
             return (
               <button
                 type="button"
                 key={row.dateKey}
-                onClick={() => setSelectedDate(row.dateKey)}
+                onClick={() => handleCellClick(row.dateKey)}
                 className={cn(
-                  "flex items-start gap-4 px-4 py-2.5 hover:bg-muted/50 text-left transition-colors",
+                  "flex items-start gap-4 px-4 py-2.5 hover:bg-muted/50 text-left transition-colors bg-background",
                   isToday && "bg-primary/5"
                 )}
               >
@@ -280,11 +313,19 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
         </div>
       )}
 
+      <PhotoViewer
+        isOpen={viewerDate !== null}
+        onClose={() => setViewerDate(null)}
+        onEdit={handleEditFromViewer}
+        posts={viewerPosts}
+        dateLabel={viewerDate ? formatViewerDateLabel(viewerDate) : ""}
+      />
+
       <PostModal
-        isOpen={selectedDate !== null}
-        onClose={() => setSelectedDate(null)}
-        selectedDate={selectedDate}
-        existingPosts={selectedDatePosts}
+        isOpen={modalDate !== null}
+        onClose={() => setModalDate(null)}
+        selectedDate={modalDate}
+        existingPosts={modalPosts}
         userId={userId}
       />
     </div>
