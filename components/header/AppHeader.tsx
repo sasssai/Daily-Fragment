@@ -31,7 +31,7 @@ const Header = () => {
           </span>
         ) : (
           <>
-            <span className="text-xl tracking-wide sm:text-2xl">
+            <span className="text-lg font-semibold tracking-wide sm:text-xl">
               Daily Fragment
             </span>
             <span className="text-xs text-muted-foreground">

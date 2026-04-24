@@ -274,16 +274,16 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
                   isToday && "bg-primary/5"
                 )}
               >
-                <div className="flex flex-col items-center w-14 shrink-0">
+                <div className="flex items-baseline gap-1.5 w-14 shrink-0">
                   <span
                     className={cn(
-                      "text-base font-medium leading-none",
+                      "text-base font-medium tabular-nums",
                       isToday && "text-primary font-bold"
                     )}
                   >
-                    {formatMonthDay(row.dateKey)}
+                    {parseDateKey(row.dateKey).getDate()}
                   </span>
-                  <span className="text-xs text-muted-foreground mt-1">
+                  <span className="text-xs text-muted-foreground">
                     {formatWeekdayShort(row.dateKey)}
                   </span>
                 </div>
