@@ -33,14 +33,13 @@ export function SakuraCanvas() {
 
     // 川の流れ
     const FLOW_ANGLE = Math.PI * 0.75;
-    const FLOW_STRENGTH = 0.0055;
+    const FLOW_STRENGTH = 0.0032;
 
     // 岩
     const rocks: Rock[] = [];
     const createRocks = () => {
       const specs = [
         { xr: 0.22, yr: 0.38, rx: 58, ry: 44, tilt: 0.2 },
-        { xr: 0.5, yr: 0.62, rx: 82, ry: 62, tilt: -0.3 },
         { xr: 0.78, yr: 0.28, rx: 50, ry: 42, tilt: 0.5 },
         { xr: 0.35, yr: 0.82, rx: 60, ry: 46, tilt: 0.1 },
         { xr: 0.7, yr: 0.78, rx: 46, ry: 40, tilt: -0.2 },
