@@ -9,14 +9,14 @@ const defaultUrl = process.env.NEXT_PUBLIC_BASE_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  applicationName: "hanami",
-  title: "hanami — 今日の小さな光",
-  description: "記録より記憶に残る一瞬を。",
+  applicationName: "Daily Fragment",
+  title: "Daily Fragment — 日常のかけら",
+  description: "A quiet collection of your daily fragments.",
   openGraph: {
-    title: "hanami — 今日の小さな光",
-    description: "記録より記憶に残る一瞬を。",
+    title: "Daily Fragment — 日常のかけら",
+    description: "A quiet collection of your daily fragments.",
     url: defaultUrl,
-    siteName: "hanami",
+    siteName: "Daily Fragment",
     locale: "ja_JP",
     type: "website",
     images: [
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "hanami — 今日の小さな光",
-    description: "記録より記憶に残る一瞬を。",
+    title: "Daily Fragment — 日常のかけら",
+    description: "A quiet collection of your daily fragments.",
     images: ["/icons/og-icon.png"],
   },
 };

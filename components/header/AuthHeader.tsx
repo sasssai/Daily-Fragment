@@ -20,8 +20,16 @@ const AuthHeader = () => {
 
   return (
     <header className="flex w-full items-center justify-between gap-4 bg-gray-50 p-4 shadow-sm md:px-16">
-      <Link href={"/"} className="text-2xl tracking-wide md:text-3xl">
-        hanami
+      <Link
+        href={"/"}
+        className="flex flex-col leading-tight"
+      >
+        <span className="text-xl tracking-wide sm:text-2xl">
+          Daily Fragment
+        </span>
+        <span className="text-xs text-muted-foreground">
+          日常のかけら
+        </span>
       </Link>
       <div className="space-x-8">
         <div className="hidden space-x-4 sm:inline">

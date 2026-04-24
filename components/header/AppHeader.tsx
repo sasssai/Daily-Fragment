@@ -26,16 +26,18 @@ const Header = () => {
         className="flex flex-col leading-tight min-w-0"
       >
         {isHome ? (
+          <span className="text-lg font-semibold truncate sm:text-xl">
+            {displayName}&apos;s Fragments
+          </span>
+        ) : (
           <>
-            <span className="text-lg font-semibold truncate sm:text-xl">
-              {displayName}&apos;s Calendar
+            <span className="text-xl tracking-wide sm:text-2xl">
+              Daily Fragment
             </span>
             <span className="text-xs text-muted-foreground">
-              Capture moments
+              日常のかけら
             </span>
           </>
-        ) : (
-          <span className="text-2xl tracking-wide">hanami</span>
         )}
       </Link>
 
