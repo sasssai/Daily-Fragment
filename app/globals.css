@@ -130,3 +130,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Floating public pins on the landing page — drift from top-right to bottom-left */
+@keyframes floatSakura {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  92% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-130vw, 105vh) rotate(18deg);
+    opacity: 0;
+  }
+}

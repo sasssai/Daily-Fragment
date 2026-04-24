@@ -1,16 +1,67 @@
 import { Button } from "@/components/ui/button";
+import { FloatingPins, type Floater } from "@/components/landing/FloatingPins";
 import { SakuraCanvas } from "@/components/landing/SakuraCanvas";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+
+async function fetchFloaters(
+  supabase: Awaited<ReturnType<typeof createClient>>
+): Promise<Floater[]> {
+  const { data: pinned } = await supabase
+    .from("posts")
+    .select("id, user_id, image_path, caption")
+    .eq("pinned", true)
+    .order("pinned_at", { ascending: false })
+    .limit(60);
+
+  if (!pinned || pinned.length === 0) return [];
+
+  // ユーザーごとに最新のピン1枚に集約
+  const byUser = new Map<string, (typeof pinned)[number]>();
+  for (const p of pinned) {
+    if (!byUser.has(p.user_id)) byUser.set(p.user_id, p);
+  }
+  const picked = Array.from(byUser.values()).slice(0, 10);
+
+  const userIds = picked.map((p) => p.user_id);
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("user_id, handle")
+    .in("user_id", userIds);
+
+  const handleByUser = new Map<string, string>();
+  for (const pr of profiles ?? []) {
+    if (pr.handle) handleByUser.set(pr.user_id, pr.handle);
+  }
+
+  const floaters: Floater[] = [];
+  for (const post of picked) {
+    const handle = handleByUser.get(post.user_id);
+    if (!handle) continue;
+    const { data: urlData } = await supabase.storage
+      .from("post-images")
+      .createSignedUrl(post.image_path, 3600);
+    if (!urlData?.signedUrl) continue;
+    floaters.push({
+      id: post.id,
+      imageUrl: urlData.signedUrl,
+      handle,
+      caption: post.caption,
+    });
+  }
+  return floaters;
+}
 
 export default async function Home() {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const isLoggedIn = !!data?.claims;
+  const floaters = await fetchFloaters(supabase);
 
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-b from-[#305269] via-[#203a52] to-[#12243a] text-white overflow-x-hidden isolate">
       <SakuraCanvas />
+      <FloatingPins pins={floaters} />
 
       <nav className="relative flex w-full items-center justify-between px-6 py-5 md:px-12">
         <span className="text-lg font-semibold tracking-wide sm:text-xl">
