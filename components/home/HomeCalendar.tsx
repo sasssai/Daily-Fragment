@@ -319,6 +319,7 @@ export function HomeCalendar({ posts, userId }: HomeCalendarProps) {
         onEdit={handleEditFromViewer}
         posts={viewerPosts}
         dateLabel={viewerDate ? formatViewerDateLabel(viewerDate) : ""}
+        userId={userId}
       />
 
       <PostModal

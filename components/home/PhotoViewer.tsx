@@ -6,9 +6,15 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight, Pencil, Pin, PinOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { type ExistingPost } from "./PostModal";
+
+const MAX_PINS = 6;
 
 type PhotoViewerProps = {
   isOpen: boolean;
@@ -16,6 +22,7 @@ type PhotoViewerProps = {
   onEdit: () => void;
   posts: ExistingPost[];
   dateLabel: string;
+  userId: string;
 };
 
 export function PhotoViewer({
@@ -24,8 +31,11 @@ export function PhotoViewer({
   onEdit,
   posts,
   dateLabel,
+  userId,
 }: PhotoViewerProps) {
   const [index, setIndex] = useState(0);
+  const [isPinning, setIsPinning] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) setIndex(0);
@@ -33,6 +43,51 @@ export function PhotoViewer({
 
   const current = posts[index];
   const hasMany = posts.length > 1;
+
+  const togglePin = async () => {
+    if (!current) return;
+    setIsPinning(true);
+    const supabase = createClient();
+
+    if (!current.pinned) {
+      const { count, error: countError } = await supabase
+        .from("posts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("pinned", true);
+
+      if (countError) {
+        toast.error("Could not check pin count: " + countError.message);
+        setIsPinning(false);
+        return;
+      }
+
+      if ((count ?? 0) >= MAX_PINS) {
+        toast.error(`Max ${MAX_PINS} pins. Unpin one first.`);
+        setIsPinning(false);
+        return;
+      }
+    }
+
+    const nowIso = new Date().toISOString();
+    const { error } = await supabase
+      .from("posts")
+      .update({
+        pinned: !current.pinned,
+        pinned_at: !current.pinned ? nowIso : null,
+      })
+      .eq("id", current.id);
+
+    if (error) {
+      toast.error("Failed: " + error.message);
+      setIsPinning(false);
+      return;
+    }
+
+    toast.success(current.pinned ? "Unpinned" : "Pinned");
+    router.refresh();
+    setIsPinning(false);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -50,6 +105,13 @@ export function PhotoViewer({
               alt={current.caption ?? ""}
               className="max-h-[80vh] max-w-full object-contain"
             />
+          )}
+
+          {current?.pinned && (
+            <span className="absolute top-3 right-3 flex items-center gap-1 text-white bg-primary/90 text-xs rounded-full px-3 py-1 font-medium">
+              <Pin className="h-3 w-3" />
+              Pinned
+            </span>
           )}
 
           {hasMany && (
@@ -92,10 +154,31 @@ export function PhotoViewer({
               </p>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={onEdit}>
-            <Pencil className="h-3.5 w-3.5 mr-1" />
-            Edit
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant={current?.pinned ? "default" : "outline"}
+              size="sm"
+              onClick={togglePin}
+              disabled={isPinning}
+              className={cn(current?.pinned && "bg-primary")}
+            >
+              {current?.pinned ? (
+                <>
+                  <PinOff className="h-3.5 w-3.5 mr-1" />
+                  Unpin
+                </>
+              ) : (
+                <>
+                  <Pin className="h-3.5 w-3.5 mr-1" />
+                  Pin
+                </>
+              )}
+            </Button>
+            <Button variant="outline" size="sm" onClick={onEdit}>
+              <Pencil className="h-3.5 w-3.5 mr-1" />
+              Edit
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
