@@ -32,7 +32,9 @@ export default async function ProtectedLayout({
   return (
     <UserProvider user={profile}>
       <AppHeader />
-      <main className="flex flex-1 flex-col px-4 py-4 md:py-6">{children}</main>
+      <main className="flex flex-1 flex-col px-4 py-4 md:px-8 md:py-6 lg:px-12">
+        {children}
+      </main>
     </UserProvider>
   );
 }
