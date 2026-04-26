@@ -22,9 +22,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: `${defaultUrl}/icons/og-icon.png`,
-        width: 1200,
-        height: 630,
-        alt: "Open Graph Image",
+        width: 1895,
+        height: 995,
+        alt: "Daily Fragment — 日常のかけら",
       },
     ],
   },

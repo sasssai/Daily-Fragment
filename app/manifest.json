@@ -1,7 +1,7 @@
 {
-  "name": "Scarlet App",
-  "short_name": "Scarlet App",
-  "description": "A PWA for Scarlet",
+  "name": "Daily Fragment",
+  "short_name": "Daily Fragment",
+  "description": "A quiet collection of your daily fragments.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
