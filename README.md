@@ -5,7 +5,7 @@
 <img src="./docs/images/hero.png" alt="Daily Fragment Hero" />
 
 🌐 **Live demo**: https://main.d3t36zroe5q2tz.amplifyapp.com  
-🔧 **Repository**: https://github.com/sasssai/today-small-hanami
+🔧 **Repository**: https://github.com/sasssai/Daily-Fragment
 
 ---
 
