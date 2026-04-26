@@ -74,11 +74,29 @@ export async function generateMetadata({
     .single();
 
   if (!profile) {
-    return { title: "Not Found · Daily Fragment" };
+    return { title: "Not Found" };
   }
 
+  const name = profile.display_name ?? profile.handle;
+  const fullTitle = `${name} · Daily Fragment`;
+  const description =
+    profile.bio ?? `@${profile.handle}が選んだ、お気に入りの今日。`;
+
   return {
-    title: `${profile.display_name ?? profile.handle} · Daily Fragment`,
-    description: profile.bio ?? `@${profile.handle} on Daily Fragment`,
+    title: name,
+    description,
+    openGraph: {
+      title: fullTitle,
+      description,
+      type: "profile",
+      url: `/${profile.handle}`,
+      siteName: "Daily Fragment",
+      locale: "ja_JP",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description,
+    },
   };
 }

@@ -1,11 +1,14 @@
 {
-  "name": "Daily Fragment",
+  "name": "Daily Fragment — 日常のかけら",
   "short_name": "Daily Fragment",
-  "description": "A quiet collection of your daily fragments.",
+  "description": "記録より記憶に残る一瞬を。日々の小さな光を、写真とひとことで集めるWebアプリ。",
+  "lang": "ja",
+  "dir": "ltr",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#fdf2f8",
+  "categories": ["lifestyle", "social"],
   "icons": [
     {
       "src": "/icons/192x192.png",
