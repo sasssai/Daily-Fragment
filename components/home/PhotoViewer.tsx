@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Pencil, Pin, PinOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Pin, PinOff, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ export function PhotoViewer({
 }: PhotoViewerProps) {
   const [index, setIndex] = useState(0);
   const [isPinning, setIsPinning] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -87,6 +88,40 @@ export function PhotoViewer({
     toast.success(current.pinned ? "Unpinned" : "Pinned");
     router.refresh();
     setIsPinning(false);
+  };
+
+  const handleDelete = async () => {
+    if (!current) return;
+    if (!confirm("Delete this post?")) return;
+
+    setIsDeleting(true);
+    const supabase = createClient();
+
+    const { error: storageError } = await supabase.storage
+      .from("post-images")
+      .remove([current.image_path]);
+
+    if (storageError) {
+      toast.error("Failed to delete image: " + storageError.message);
+      setIsDeleting(false);
+      return;
+    }
+
+    const { error: deleteError } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", current.id);
+
+    if (deleteError) {
+      toast.error("Failed to delete post: " + deleteError.message);
+      setIsDeleting(false);
+      return;
+    }
+
+    toast.success("Deleted");
+    router.refresh();
+    onClose();
+    setIsDeleting(false);
   };
 
   return (
@@ -177,6 +212,16 @@ export function PhotoViewer({
             <Button variant="outline" size="sm" onClick={onEdit}>
               <Pencil className="h-3.5 w-3.5 mr-1" />
               Edit
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1" />
+              {isDeleting ? "..." : "Delete"}
             </Button>
           </div>
         </div>
