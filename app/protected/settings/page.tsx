@@ -1,7 +1,6 @@
 import { LogoutButton } from "@/components/auth/LogoutButton";
 import { ProfileForm } from "@/components/settings/ProfileForm";
 import { createClient } from "@/lib/supabase/server";
-import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -26,12 +25,9 @@ export default async function SettingsPage() {
         {profile?.handle && (
           <Link
             href={`/${profile.handle}`}
-            target="_blank"
-            rel="noopener"
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition"
           >
             View public page
-            <ExternalLink className="h-3.5 w-3.5" />
           </Link>
         )}
       </div>
